@@ -44,7 +44,7 @@ void _dbgprint(const char* _sMode, const char* _sFilename, int _iLine, const cha
 
 #else
 
-#define ensure_msg(_bTrueCondition, _sMsg)
-#define ensure(_bTrueCondition)
+#define ensure_msg(_bTrueCondition, _sMsg)  assert(_bTrueCondition)
+#define ensure(_bTrueCondition)             assert(_bTrueCondition)
 
 #endif

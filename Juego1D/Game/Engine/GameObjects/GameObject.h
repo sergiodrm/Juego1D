@@ -18,7 +18,7 @@ public:
   void Init();
   void OnCreation();
   void Update(float _fDeltaTime);
-  void Destroy();
+  void OnDestroy();
 
   void Active();
   void Deactive();
@@ -34,12 +34,13 @@ public:
   *     Static methods
   */
   static CGameObject* Create();
+  static void Destroy(CGameObject* _pGameObject);
 
 protected:
   /**
   * Protected component so that game objects only can be created from Create() method
   */
-  CGameObject();
+  CGameObject() {}
 
 private:
 
@@ -54,8 +55,7 @@ private:
 template <typename T>
 T* CGameObject::AddComponent()
 {
-  T* pNewComponent = new T();
-  ensure_msg(pNewComponent != nullptr, "Failed creating new component");
+  T* pNewComponent = CComponent::Create<T>(this);
   m_tComponents.push_back(pNewComponent);
   return pNewComponent;
 }

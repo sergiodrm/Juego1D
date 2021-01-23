@@ -24,7 +24,10 @@
     <ClCompile Include="Game\Engine\Utilities\MacroUtility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Engine\GameObjects\Components\Component.cpp">
+    <ClCompile Include="Game\Engine\GameObjects\Components\Base\Component.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Engine\GameObjects\Components\Derived\TransformComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,7 +38,10 @@
     <ClInclude Include="Game\Engine\Utilities\MacroUtility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Engine\GameObjects\Components\Component.h">
+    <ClInclude Include="Game\Engine\GameObjects\Components\Base\Component.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Engine\GameObjects\Components\Derived\TransformComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

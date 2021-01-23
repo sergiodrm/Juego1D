@@ -84,10 +84,11 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)Game\Engine</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -96,12 +97,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)Game\Engine</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,15 +141,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Game\Engine\GameObjects\Components\Component.cpp" />
+    <ClCompile Include="Game\Engine\GameObjects\Components\Derived\TransformComponent.cpp" />
+    <ClCompile Include="Game\Engine\GameObjects\Components\Base\Component.cpp" />
     <ClCompile Include="Game\Application\main.cpp" />
     <ClCompile Include="Game\Engine\GameObjects\GameObject.cpp" />
     <ClCompile Include="Game\Engine\Utilities\MacroUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game\Engine\GameObjects\Components\Component.h" />
+    <ClInclude Include="Game\Engine\GameObjects\Components\Base\Component.h" />
     <ClInclude Include="Game\Engine\GameObjects\GameObject.h" />
     <ClInclude Include="Game\Engine\Utilities\MacroUtility.h" />
+    <ClInclude Include="Game\Engine\GameObjects\Components\Derived\TransformComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

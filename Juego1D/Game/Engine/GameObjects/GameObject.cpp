@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "Components/Derived/TransformComponent.h"
 
 CGameObject::~CGameObject()
 {}
@@ -9,14 +10,25 @@ void CGameObject::Init()
 
 void CGameObject::OnCreation()
 {
+  m_tComponents.reserve(3u);
+  AddComponent<CTransformComponent>();
 }
 
 void CGameObject::Update(float _fDeltaTime)
 {
+  for (CComponent* pIterator : m_tComponents)
+  {
+    pIterator->Update(_fDeltaTime);
+  }
 }
 
-void CGameObject::Destroy()
+void CGameObject::OnDestroy()
 {
+  for (CComponent* pIterator : m_tComponents)
+  {
+    CComponent::Destroy(pIterator);
+  }
+  m_tComponents.shrink_to_fit();
 }
 
 void CGameObject::Active()
@@ -29,7 +41,7 @@ void CGameObject::Deactive()
 
 bool CGameObject::IsActive() const
 {
-    return false;
+  return m_bActive;
 }
 
 CGameObject* CGameObject::Create()
@@ -40,7 +52,10 @@ CGameObject* CGameObject::Create()
   return pNewGameObject;
 }
 
-CGameObject::CGameObject()
+void CGameObject::Destroy(CGameObject* _pGameObject)
 {
-  m_tComponents.reserve(3u);
+  ensure(_pGameObject != nullptr);
+  _pGameObject->OnDestroy();
+  delete _pGameObject;
 }
+
