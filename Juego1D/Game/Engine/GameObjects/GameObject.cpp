@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "Components/Derived/TransformComponent.h"
+#include "Logic/LogicManager.h"
 
 CGameObject::~CGameObject()
 {}
@@ -12,6 +13,7 @@ void CGameObject::OnCreation()
 {
   m_tComponents.reserve(3u);
   AddComponent<CTransformComponent>();
+  Active();
 }
 
 void CGameObject::Update(float _fDeltaTime)
@@ -33,10 +35,12 @@ void CGameObject::OnDestroy()
 
 void CGameObject::Active()
 {
+  m_bActive = true;
 }
 
 void CGameObject::Deactive()
 {
+  m_bActive = false;
 }
 
 bool CGameObject::IsActive() const
@@ -49,6 +53,7 @@ CGameObject* CGameObject::Create()
   CGameObject* pNewGameObject = new CGameObject();
   ensure_msg(pNewGameObject != nullptr, "Failed creating new game object.");
   pNewGameObject->OnCreation();
+  CLogicManager::GetInstance().AddGameObject(*pNewGameObject);
   return pNewGameObject;
 }
 

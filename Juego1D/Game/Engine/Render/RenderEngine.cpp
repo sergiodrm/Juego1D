@@ -29,6 +29,11 @@ void CRenderEngine::Render()
   }
 }
 
+void CRenderEngine::AddRenderableObject(CRenderableObject& _renderableObject)
+{
+  m_tRenderableObjects.push_back(&_renderableObject);
+}
+
 void CRenderEngine::Init_Internal()
 {
   m_tRenderableObjects.reserve(30);

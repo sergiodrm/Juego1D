@@ -1,5 +1,7 @@
 #include "Component.h"
 
+CComponent::~CComponent() {}
+
 void CComponent::OnCreation(CGameObject* _pOwner)
 {
   m_pOwner = _pOwner;

@@ -7,9 +7,12 @@ class CGameObject;
 
 class CComponent
 {
+  BASE_CLASS(CComponent);
 public:
 
-  void OnCreation(CGameObject* _pOwner);
+  virtual ~CComponent();
+
+  virtual void OnCreation(CGameObject* _pOwner);
   virtual void Init();
   virtual void Update(float _fDeltaTime);
   virtual void OnDestroy();

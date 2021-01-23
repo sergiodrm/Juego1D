@@ -23,6 +23,7 @@ public:
    *    Render API
    */
   void Render();
+  void AddRenderableObject(CRenderableObject& _renderableObject);
 
 private:
 

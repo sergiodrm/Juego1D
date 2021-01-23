@@ -1,20 +1,23 @@
 #include "TransformComponent.h"
 
 CTransformComponent::CTransformComponent()
-  : m_uPosition(0u)
+  : m_uPositionX(0u), m_uPositionY(0u)
 {}
 
-size_t CTransformComponent::GetPosition() const
+void CTransformComponent::GetPosition(size_t& uPosX_, size_t& uPosY_) const
 {
-  return m_uPosition;
+  uPosX_ = m_uPositionX;
+  uPosY_ = m_uPositionY;
 }
 
-void CTransformComponent::SetPosition(size_t _uPosition)
+void CTransformComponent::SetPosition(size_t _uPosX, size_t _uPosY)
 {
-  m_uPosition = _uPosition;
+  m_uPositionX = _uPosX;
+  m_uPositionY = _uPosY;
 }
 
-void CTransformComponent::AddPosition(size_t _uOffset)
+void CTransformComponent::AddPosition(size_t _uPosX, size_t _uPosY)
 {
-  m_uPosition += _uOffset;
+  m_uPositionX += _uPosX;
+  m_uPositionY += _uPosY;
 }

@@ -24,7 +24,12 @@ void _dbgprint(const char* _sMode, const char* _sFilename, int _iLine, const cha
 #define PRINT_ERROR(_sFormat, ...)
 #endif
 
-
+/**
+ *    Derived class macro
+ */
+#define BASE_CLASS(_BASECLASSNAME) \
+protected: \
+  typedef _BASECLASSNAME Super 
 
 /**
 *

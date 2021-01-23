@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Utilities/MacroUtility.h"
 #include <vector>
 
 // Forward declaration
