@@ -146,12 +146,19 @@
     <ClCompile Include="Game\Application\main.cpp" />
     <ClCompile Include="Game\Engine\GameObjects\GameObject.cpp" />
     <ClCompile Include="Game\Engine\Utilities\MacroUtility.cpp" />
+    <ClCompile Include="Game\Engine\Render\RenderEngine.cpp" />
+    <ClCompile Include="Game\Engine\Render\RenderableObject.cpp" />
+    <ClCompile Include="Game\Engine\Logic\LogicManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Engine\GameObjects\Components\Base\Component.h" />
     <ClInclude Include="Game\Engine\GameObjects\GameObject.h" />
     <ClInclude Include="Game\Engine\Utilities\MacroUtility.h" />
     <ClInclude Include="Game\Engine\GameObjects\Components\Derived\TransformComponent.h" />
+    <ClInclude Include="Game\Engine\Utilities\SingletonBase.h" />
+    <ClInclude Include="Game\Engine\Render\RenderEngine.h" />
+    <ClInclude Include="Game\Engine\Render\RenderableObject.h" />
+    <ClInclude Include="Game\Engine\Logic\LogicManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

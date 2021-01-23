@@ -30,7 +30,7 @@ template <typename T>
 T* ISingletonBase<T>::m_pInstance = nullptr;
 
 template <typename T>
-void ISingletonBase::CreateSingleton()
+void ISingletonBase<T>::CreateSingleton()
 {
   if (m_pInstance == nullptr)
   {
@@ -39,13 +39,13 @@ void ISingletonBase::CreateSingleton()
 }
 
 template <typename T>
-T& ISingletonBase::GetSingleton()
+T& ISingletonBase<T>::GetSingleton()
 {
   return *m_pInstance;
 }
 
 template <typename T>
-void ISingletonBase::DestroySingleton()
+void ISingletonBase<T>::DestroySingleton()
 {
   if (m_pInstance != nullptr)
   {
