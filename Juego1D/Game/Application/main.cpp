@@ -14,13 +14,6 @@ int main()
   CLogicManager::Init();
   CInputManager::Init();
 
-  CGameObject* player = CGameObject::Create();
-  CRenderComponent* pRenderComponent = player->AddComponent<CRenderComponent>();
-  pRenderComponent->SetSymbol('X');
-  CMovementComponent* pMovementComponent = player->AddComponent<CMovementComponent>();
-  pMovementComponent->SetInputPlayerEnable(true);
-  CAttackComponent* pAttackComponent = player->AddComponent<CAttackComponent>();
-
   
 
   while (true)

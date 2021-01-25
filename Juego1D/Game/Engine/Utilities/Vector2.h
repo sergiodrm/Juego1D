@@ -21,3 +21,4 @@ private:
   float m_fY;
 };
 
+CVector2 operator+(const CVector2& _vector1, const CVector2& _vector2);

@@ -27,7 +27,7 @@ void CAttackComponent::Update(float _fDeltaTime)
 
 void CAttackComponent::SpawnBullet(int _iDirection) const
 {
-  // @TODO spawn bullet depending on the direction
+  // @TODO spawn bullet depending on the direction (it must be in a manager and not create new game objects)
 
   CGameObject* pBullet = CGameObject::Create();
   CRenderComponent* pRenderComponent = pBullet->AddComponent<CRenderComponent>();

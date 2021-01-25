@@ -6,11 +6,6 @@
 CRenderableObject::CRenderableObject(char _cSymbol)
   : m_cSymbol(_cSymbol), m_vPosition(0.f, 0.f) {}
 
-void CRenderableObject::operator=(char _cSymbol)
-{
-  m_cSymbol = _cSymbol;
-}
-
 CVector2 CRenderableObject::GetPosition() const
 {
   return m_vPosition;
@@ -32,9 +27,27 @@ void CRenderableObject::SetSymbol(char _cSymbol)
 
 void CRenderableObject::Render() const
 {
-  COORD currentPosition;
-  currentPosition.X = static_cast<SHORT>(m_vPosition.GetX());
-  currentPosition.Y = static_cast<SHORT>(m_vPosition.GetY());
-  SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), currentPosition);
-  printf("%c", m_cSymbol);
+  if (m_bActive)
+  {
+    COORD currentPosition;
+    currentPosition.X = static_cast<SHORT>(m_vPosition.GetX());
+    currentPosition.Y = static_cast<SHORT>(m_vPosition.GetY());
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), currentPosition);
+    printf("%c", m_cSymbol);
+  }
+}
+
+bool CRenderableObject::IsActive() const
+{
+  return m_bActive;
+}
+
+void CRenderableObject::Active()
+{
+  m_bActive = true;
+}
+
+void CRenderableObject::Deactive()
+{
+  m_bActive = false;
 }

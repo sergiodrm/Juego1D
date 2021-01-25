@@ -4,7 +4,8 @@
 #include "Input/InputManager.h"
 
 CMovementComponent::CMovementComponent()
-  : m_fSpeed(10.f), m_vMovementDirection(0, 0) {}
+  : m_fSpeed(10.f), m_vMovementDirection(0, 0),
+m_bInputPlayer(true) {}
 
 void CMovementComponent::Update(float _fDeltaTime)
 {

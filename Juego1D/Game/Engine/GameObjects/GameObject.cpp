@@ -48,6 +48,21 @@ bool CGameObject::IsActive() const
   return m_bActive;
 }
 
+CGameObject::EGameObjectTypes CGameObject::GetType() const
+{
+  return m_eType;
+}
+
+bool CGameObject::IsType(EGameObjectTypes _eType) const
+{
+  return m_eType == _eType;
+}
+
+void CGameObject::SetType(EGameObjectTypes _eType)
+{
+  m_eType = _eType;
+}
+
 CGameObject* CGameObject::Create()
 {
   CGameObject* pNewGameObject = new CGameObject();

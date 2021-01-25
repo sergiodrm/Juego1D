@@ -13,14 +13,17 @@ public:
   char GetSymbol() const;
   void SetSymbol(char _cSymbol);
 
-  void Render() const;
+  virtual void Render() const;
 
-  void operator=(char _cSymbol);
+  bool IsActive() const;
+  void Active();
+  void Deactive();
 
-private:
+protected:
 
   char m_cSymbol;
   CVector2 m_vPosition;
+  bool m_bActive;
 
 };
 

@@ -7,6 +7,15 @@ class CComponent;
 
 class CGameObject
 {
+
+public:
+
+  enum EGameObjectTypes : int
+  {
+    Invalid = -1,
+    Player, Enemy, Bullet
+  };
+
   /**
   *     Methods
   */
@@ -22,6 +31,10 @@ public:
   void Active();
   void Deactive();
   bool IsActive() const;
+
+  EGameObjectTypes GetType() const;
+  bool IsType(EGameObjectTypes _eType) const;
+  void SetType(EGameObjectTypes _eType);
 
   template <typename T>
   T* AddComponent();
@@ -45,6 +58,7 @@ private:
 
   std::vector<CComponent*> m_tComponents;
   bool m_bActive;
+  EGameObjectTypes m_eType;
 
 };
 

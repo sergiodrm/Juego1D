@@ -20,3 +20,8 @@ CVector2& CVector2::operator+=(const CVector2 _other)
 {
   return *this + _other;
 }
+
+CVector2 operator+(const CVector2& _vector1, const CVector2& _vector2)
+{
+  return CVector2(_vector1.GetX() + _vector2.GetX(), _vector1.GetY() + _vector2.GetY());
+}
