@@ -4,23 +4,21 @@
 #include <cstdio>
 
 CRenderableObject::CRenderableObject(char _cSymbol)
-  : m_cSymbol(_cSymbol), m_uPositionX(0u), m_uPositionY(0u) {}
+  : m_cSymbol(_cSymbol), m_vPosition(0.f, 0.f) {}
 
 void CRenderableObject::operator=(char _cSymbol)
 {
   m_cSymbol = _cSymbol;
 }
 
-void CRenderableObject::GetPosition(size_t& uPosX_, size_t& uPosY_) const
+CVector2 CRenderableObject::GetPosition() const
 {
-  uPosX_ = m_uPositionX;
-  uPosY_ = m_uPositionY;
+  return m_vPosition;
 }
 
-void CRenderableObject::SetPosition(size_t _uPosX, size_t _uPosY)
+void CRenderableObject::SetPosition(const CVector2& _vPosition)
 {
-  m_uPositionX = _uPosX;
-  m_uPositionY = _uPosY;
+  m_vPosition = _vPosition;
 }
 
 char CRenderableObject::GetSymbol() const
@@ -35,8 +33,8 @@ void CRenderableObject::SetSymbol(char _cSymbol)
 void CRenderableObject::Render() const
 {
   COORD currentPosition;
-  currentPosition.X = static_cast<SHORT>(m_uPositionX);
-  currentPosition.Y = static_cast<SHORT>(m_uPositionY);
+  currentPosition.X = static_cast<SHORT>(m_vPosition.GetX());
+  currentPosition.Y = static_cast<SHORT>(m_vPosition.GetY());
   SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), currentPosition);
   printf("%c", m_cSymbol);
 }

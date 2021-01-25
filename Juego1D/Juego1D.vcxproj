@@ -72,9 +72,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <IntDir>bin_int\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <IntDir>bin_int\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -141,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game\Engine\GameObjects\Components\Derived\AttackComponent.cpp" />
     <ClCompile Include="Game\Engine\GameObjects\Components\Derived\RenderComponent.cpp" />
     <ClCompile Include="Game\Engine\GameObjects\Components\Derived\TransformComponent.cpp" />
     <ClCompile Include="Game\Engine\GameObjects\Components\Base\Component.cpp" />
@@ -150,8 +155,13 @@
     <ClCompile Include="Game\Engine\Render\RenderEngine.cpp" />
     <ClCompile Include="Game\Engine\Render\RenderableObject.cpp" />
     <ClCompile Include="Game\Engine\Logic\LogicManager.cpp" />
+    <ClCompile Include="Game\Engine\Input\InputManager.cpp" />
+    <ClCompile Include="Game\Engine\Utilities\Vector2.cpp" />
+    <ClCompile Include="Game\Engine\GameObjects\Components\Derived\MovementComponent.cpp" />
+    <ClCompile Include="Game\Engine\Timer\TimeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game\Engine\GameObjects\Components\Derived\AttackComponent.h" />
     <ClInclude Include="Game\Engine\GameObjects\Components\Base\Component.h" />
     <ClInclude Include="Game\Engine\GameObjects\Components\Derived\RenderComponent.h" />
     <ClInclude Include="Game\Engine\GameObjects\GameObject.h" />
@@ -161,6 +171,10 @@
     <ClInclude Include="Game\Engine\Render\RenderEngine.h" />
     <ClInclude Include="Game\Engine\Render\RenderableObject.h" />
     <ClInclude Include="Game\Engine\Logic\LogicManager.h" />
+    <ClInclude Include="Game\Engine\Input\InputManager.h" />
+    <ClInclude Include="Game\Engine\Utilities\Vector2.h" />
+    <ClInclude Include="Game\Engine\GameObjects\Components\Derived\MovementComponent.h" />
+    <ClInclude Include="Game\Engine\Timer\TimeManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

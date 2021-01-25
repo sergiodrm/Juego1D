@@ -45,7 +45,7 @@ protected: \
     __debugbreak();                           \
   }                                           
 #define ensure(_bTrueCondition)               \
-  if (!(_bTrueCondition)) __debugbreak();
+  if (!(_bTrueCondition)) __debugbreak()
 
 #else
 

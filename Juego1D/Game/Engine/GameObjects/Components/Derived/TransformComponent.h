@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../Base/Component.h"
+#include "GameObjects/Components/Base/Component.h"
+#include "Utilities/Vector2.h"
 
 class CTransformComponent : public CComponent
 {
@@ -8,13 +9,12 @@ public:
 
   CTransformComponent();
 
-  void GetPosition(size_t& uPosX_, size_t& uPosY_) const;
-  void SetPosition(size_t _uPosX, size_t _uPosY);
-  void AddPosition(size_t _uPosX, size_t _uPosY);
+  CVector2 GetPosition() const;
+  void SetPosition(const CVector2& _vPosition);
+  void AddPosition(const CVector2& _vPosition);
 
 private:
 
-  size_t m_uPositionX;
-  size_t m_uPositionY;
+  CVector2 m_vPosition;
 
 };

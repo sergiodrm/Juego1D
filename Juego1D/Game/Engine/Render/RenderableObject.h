@@ -1,13 +1,15 @@
 #pragma once
 
+#include "Utilities/Vector2.h"
+
 class CRenderableObject
 {
 public:
 
   CRenderableObject(char _cSymbol = '-');
 
-  void GetPosition(size_t& uPosX_, size_t& uPosY_) const;
-  void SetPosition(size_t _uPosX, size_t _uPosY);
+  CVector2 GetPosition() const;
+  void SetPosition(const CVector2& _vPosition);
   char GetSymbol() const;
   void SetSymbol(char _cSymbol);
 
@@ -18,8 +20,7 @@ public:
 private:
 
   char m_cSymbol;
-  size_t m_uPositionX;
-  size_t m_uPositionY;
+  CVector2 m_vPosition;
 
 };
 

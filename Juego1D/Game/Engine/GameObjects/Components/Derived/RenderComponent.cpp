@@ -3,6 +3,7 @@
 #include "Render/RenderEngine.h"
 #include "GameObjects/GameObject.h"
 #include "TransformComponent.h"
+#include "Utilities/Vector2.h"
 
 CRenderComponent::CRenderComponent() : m_renderableObject() {}
 
@@ -17,9 +18,8 @@ void CRenderComponent::Update(float _fDeltaTime)
   CTransformComponent* pTransformComponent = GetOwner()->GetComponent<CTransformComponent>();
   if (pTransformComponent != nullptr)
   {
-    size_t uPosX, uPosY;
-    pTransformComponent->GetPosition(uPosX, uPosY);
-    m_renderableObject.SetPosition(uPosY, uPosY);
+    CVector2 vPosition = pTransformComponent->GetPosition();
+    m_renderableObject.SetPosition(vPosition);
   }
 }
 
