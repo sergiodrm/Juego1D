@@ -42,6 +42,11 @@ bool CTimeManager::Update()
   return false;
 }
 
+double CTimeManager::GetFixedTick() const
+{
+  return m_dFixedTick;
+}
+
 
 void CTimeManager::Init_Internal()
 {

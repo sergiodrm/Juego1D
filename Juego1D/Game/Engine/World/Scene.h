@@ -1,17 +1,24 @@
 #pragma once
 
+#include <string>
+
+
+class CGameObject;
 
 class CScene
 {
+
 public:
 
-  explicit CScene(int _iNumBullets = 5, int _iNumEnemies = 10);
-  void Init();
-  void Shutdown();
+  CScene();
+
+  void Render();
+  void UpdateGameObjectInMap(CGameObject& _rGameObject);
+  void ClearScene();
 
 private:
 
-  const int m_iNumberOfBullets;
-  const int m_iNumberOfEnemies;
+  std::string m_sMap;
+
 };
 

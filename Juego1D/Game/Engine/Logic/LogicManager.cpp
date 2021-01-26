@@ -1,5 +1,6 @@
 #include "LogicManager.h"
 #include "GameObjects/GameObject.h"
+#include "World/World.h"
 
 void CLogicManager::Init()
 {
@@ -18,14 +19,9 @@ void CLogicManager::Shutdown()
 
 void CLogicManager::Update(float _fDeltaTime)
 {
-  for (CGameObject* pIterator : m_tGameObjects)
+  /*for (size_t uIndex = 0; uIndex < CWorld::GetInstance().GetNumOfGameObjects(); ++uIndex)
   {
-    if (pIterator->IsActive())
-      pIterator->Update(_fDeltaTime);
-  }
-}
-
-void CLogicManager::AddGameObject(CGameObject& _rGameObject)
-{
-  m_tGameObjects.push_back(&_rGameObject);
+    CGameObject* pCurrentGameObject = CWorld::GetInstance().GetGameObjectByIndex(uIndex);
+    pCurrentGameObject->Update(_fDeltaTime);
+  }*/
 }

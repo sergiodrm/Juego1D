@@ -20,28 +20,26 @@ void CRenderEngine::Shutdown()
   DestroySingleton();
 }
 
-void CRenderEngine::Render()
+void CRenderEngine::Render() const
 {
   ClearScreen();
-  for (CRenderableObject* pIterator : m_tRenderableObjects)
-  {
-    pIterator->Render();
-  }
+  if (m_pDrawWorldFunction != nullptr)
+    m_pDrawWorldFunction();
 }
 
-void CRenderEngine::AddRenderableObject(CRenderableObject& _renderableObject)
+void CRenderEngine::SetDrawWorldFunction(DrawWorldFunction _pDrawFunction)
 {
-  m_tRenderableObjects.push_back(&_renderableObject);
+  m_pDrawWorldFunction = _pDrawFunction;
 }
 
 void CRenderEngine::Init_Internal()
 {
-  m_tRenderableObjects.reserve(30);
+  m_pDrawWorldFunction = nullptr;
 }
 
 void CRenderEngine::Shutdown_Internal()
 {
-  m_tRenderableObjects.clear();
+  m_pDrawWorldFunction = nullptr;
 }
 
 void CRenderEngine::ClearScreen()

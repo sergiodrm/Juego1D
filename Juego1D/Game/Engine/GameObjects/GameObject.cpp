@@ -1,26 +1,29 @@
 #include "GameObject.h"
 #include "Components/Derived/TransformComponent.h"
 #include "Logic/LogicManager.h"
+#include "World/World.h"
 
-CGameObject::~CGameObject()
-{}
+CGameObject::CGameObject() :
+  m_bActive(false), m_eType(EGameObjectTypes::Invalid) {}
 
-void CGameObject::Init()
-{
-}
+CGameObject::~CGameObject() = default;
+
+void CGameObject::Init() {}
 
 void CGameObject::OnCreation()
 {
-  m_tComponents.reserve(3u);
+  m_tComponents.reserve(4u);
   AddComponent<CTransformComponent>();
-  Active();
 }
 
 void CGameObject::Update(float _fDeltaTime)
 {
-  for (CComponent* pIterator : m_tComponents)
+  if (m_bActive)
   {
-    pIterator->Update(_fDeltaTime);
+    for (CComponent* pIterator : m_tComponents)
+    {
+      pIterator->Update(_fDeltaTime);
+    }
   }
 }
 
@@ -30,17 +33,25 @@ void CGameObject::OnDestroy()
   {
     CComponent::Destroy(pIterator);
   }
-  m_tComponents.shrink_to_fit();
+  m_tComponents.clear();
 }
 
 void CGameObject::Active()
 {
   m_bActive = true;
+  for (CComponent* pIterator : m_tComponents)
+  {
+    pIterator->Active();
+  }
 }
 
 void CGameObject::Deactive()
 {
   m_bActive = false;
+  for (CComponent* pIterator : m_tComponents)
+  {
+    pIterator->Deactive();
+  }
 }
 
 bool CGameObject::IsActive() const
@@ -68,7 +79,7 @@ CGameObject* CGameObject::Create()
   CGameObject* pNewGameObject = new CGameObject();
   ensure_msg(pNewGameObject != nullptr, "Failed creating new game object.");
   pNewGameObject->OnCreation();
-  CLogicManager::GetInstance().AddGameObject(*pNewGameObject);
+  CWorld::GetInstance().InsertGameObject(*pNewGameObject);
   return pNewGameObject;
 }
 
@@ -78,4 +89,5 @@ void CGameObject::Destroy(CGameObject* _pGameObject)
   _pGameObject->OnDestroy();
   delete _pGameObject;
 }
+
 

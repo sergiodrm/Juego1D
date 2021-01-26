@@ -52,7 +52,7 @@ protected:
   /**
   * Protected component so that game objects only can be created from Create() method
   */
-  CGameObject() {}
+  CGameObject();
 
 private:
 

@@ -6,6 +6,8 @@
 // Forward declaration
 class CRenderableObject;
 
+typedef void (*DrawWorldFunction)();
+
 class CRenderEngine : public ISingletonBase<CRenderEngine>
 {
   DECLARE_SINGLETON_CLASS(CRenderEngine);
@@ -22,8 +24,8 @@ public:
   /**
    *    Render API
    */
-  void Render();
-  void AddRenderableObject(CRenderableObject& _renderableObject);
+  void Render() const;
+  void SetDrawWorldFunction(DrawWorldFunction _pDrawFunction);
 
 private:
 
@@ -37,7 +39,6 @@ private:
    */
 private:
 
-  std::vector<CRenderableObject*> m_tRenderableObjects;
-
+  DrawWorldFunction m_pDrawWorldFunction;
 };
 

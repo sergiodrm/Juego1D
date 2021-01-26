@@ -4,8 +4,7 @@
 #include "Input/InputManager.h"
 
 CMovementComponent::CMovementComponent()
-  : m_fSpeed(10.f), m_vMovementDirection(0, 0),
-m_bInputPlayer(true) {}
+  : m_fSpeed(2.f), m_iMovementDirection(0), m_bInputPlayer(true), m_fPosition(0.f) {}
 
 void CMovementComponent::Update(float _fDeltaTime)
 {
@@ -14,9 +13,16 @@ void CMovementComponent::Update(float _fDeltaTime)
   UpdateMovement(_fDeltaTime);
 }
 
-CVector2 CMovementComponent::GetMovementDirection() const
+void CMovementComponent::Active()
 {
-  return m_vMovementDirection;
+  Super::Active();
+  CTransformComponent* pTransformComponent = GetOwner()->GetComponent<CTransformComponent>();
+  m_fPosition = static_cast<float>(pTransformComponent->GetPosition());
+}
+
+int CMovementComponent::GetMovementDirection() const
+{
+  return m_iMovementDirection;
 }
 
 float CMovementComponent::GetSpeed() const
@@ -29,9 +35,9 @@ void CMovementComponent::SetSpeed(float _fSpeed)
   m_fSpeed = _fSpeed;
 }
 
-void CMovementComponent::SetMovementDirection(const CVector2& _vMovementDirection)
+void CMovementComponent::SetMovementDirection(int _iMovementDirection)
 {
-  m_vMovementDirection = _vMovementDirection;
+  m_iMovementDirection = _iMovementDirection;
 }
 
 bool CMovementComponent::IsInputPlayerEnable() const
@@ -48,24 +54,26 @@ void CMovementComponent::UpdateInputVector()
 {
   if (CInputManager::GetInstance().IsKeyPressed(KEYBOARD_A))
   {
-    m_vMovementDirection.SetX(-1.f);
+    m_iMovementDirection = -1;
   } else if (CInputManager::GetInstance().IsKeyPressed(KEYBOARD_D))
   {
-    m_vMovementDirection.SetX(1.f);
+    m_iMovementDirection = 1;
   } else
   {
-    m_vMovementDirection.SetX(0.f);
+    m_iMovementDirection = 0;
   }
 }
 
-void CMovementComponent::UpdateMovement(float _fDeltaTime) const
+void CMovementComponent::UpdateMovement(float _fDeltaTime)
 {
   CTransformComponent* pTransformComponent = GetOwner()->GetComponent<CTransformComponent>();
   if (pTransformComponent != nullptr)
   {
-    CVector2 vOffset;
-    vOffset.SetX(m_vMovementDirection.GetX() * m_fSpeed * _fDeltaTime);
-    vOffset.SetY(m_vMovementDirection.GetY() * m_fSpeed * _fDeltaTime);
-    pTransformComponent->AddPosition(vOffset);
+    if (pTransformComponent->GetPosition() != static_cast<int>(m_fPosition))
+    {
+      m_fPosition = static_cast<float>(pTransformComponent->GetPosition());
+    }
+    m_fPosition += m_fSpeed * _fDeltaTime * static_cast<float>(m_iMovementDirection);
+    pTransformComponent->SetPosition(static_cast<int>(m_fPosition));
   }
 }

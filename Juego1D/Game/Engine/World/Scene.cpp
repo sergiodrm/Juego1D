@@ -1,70 +1,43 @@
 #include "Scene.h"
-#include "Logic/LogicManager.h"
-#include "Render/RenderEngine.h"
-#include "Map.h"
-#include "GameObjects/GameObject.h"
 #include "GameObjects/Components/Derived/TransformComponent.h"
-#include "GameObjects/Components/Derived/MovementComponent.h"
-#include "GameObjects/Components/Derived/AttackComponent.h"
 #include "GameObjects/Components/Derived/RenderComponent.h"
+#include <Windows.h>
+#include <consoleapi2.h>
+#include <cstdio>
 
-CScene::CScene(int _iNumBullets, int _iNumEnemies)
-  : m_iNumberOfBullets(_iNumBullets), m_iNumberOfEnemies(_iNumEnemies) {}
+#include "GameObjects/GameObject.h"
 
-void CScene::Init()
+CScene::CScene()
 {
-  /**
-   * Init player
-   */
-  {
-    CGameObject* pPlayer = CGameObject::Create();
-    pPlayer->SetType(CGameObject::EGameObjectTypes::Player);
-    CRenderComponent* pRenderComponent = pPlayer->AddComponent<CRenderComponent>();
-    pRenderComponent->SetSymbol('X');
-    CMovementComponent* pMovementComponent = pPlayer->AddComponent<CMovementComponent>();
-    pMovementComponent->SetInputPlayerEnable(true);
-    CAttackComponent* pAttackComponent = pPlayer->AddComponent<CAttackComponent>();
-  }
-
-  /**
-   * Init bullets
-   */
-  {
-    for (int iIndex = 0; iIndex < m_iNumberOfBullets; ++iIndex)
-    {
-      CGameObject* pBullet = CGameObject::Create();
-      pBullet->SetType(CGameObject::EGameObjectTypes::Bullet);
-      CRenderComponent* pRenderComponent = pBullet->AddComponent<CRenderComponent>();
-      CMovementComponent* pMovementComponent = pBullet->AddComponent<CMovementComponent>();
-      pMovementComponent->SetInputPlayerEnable(false);
-      pBullet->Deactive();
-    }
-  }
-
-  /**
-   * Init enemies
-   */
-  {
-    for (int iIndex = 0; iIndex < m_iNumberOfEnemies; ++iIndex)
-    {
-      CGameObject* pEnemy = CGameObject::Create();
-      pEnemy->SetType(CGameObject::EGameObjectTypes::Enemy);
-      CRenderComponent* pRenderComponent = pEnemy->AddComponent<CRenderComponent>();
-      pRenderComponent->SetSymbol('*');
-      CMovementComponent* pMovementComponent = pEnemy->AddComponent<CMovementComponent>();
-      pMovementComponent->SetInputPlayerEnable(false);
-      pEnemy->Deactive();
-    }
-  }
-
-  /**
-   * @TODO: Implement a complete active/deactive logic in game objects (including components and derived).
-   * @TODO: Garbage collector to avoid memory leaks.
-   * @TODO: Spawn bullets logic from Scene and handle without change game object vector.
-   * @TODO: Include time manager in game.
-   * @TODO: Collision component.
-   * @TODO: Life component.
-   */
+  m_sMap.insert(m_sMap.begin(), 50, '-');
 }
 
-void CScene::Shutdown() {}
+void CScene::Render()
+{
+  COORD currentPosition;
+  currentPosition.X = 10;
+  currentPosition.Y = 0;
+  SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), currentPosition);
+  printf("%s", m_sMap.c_str());
+  ClearScene();
+}
+
+void CScene::UpdateGameObjectInMap(CGameObject& _rGameObject)
+{
+  CTransformComponent* pTransformComponent = _rGameObject.GetComponent<CTransformComponent>();
+  CRenderComponent* pRenderComponent = _rGameObject.GetComponent<CRenderComponent>();
+  int iPosition = pTransformComponent->GetPosition();
+  char cSymbol = pRenderComponent->GetSymbol();
+  if (iPosition >= 0 && iPosition < static_cast<int>(m_sMap.size()))
+  {
+    m_sMap[iPosition] = cSymbol;
+  }
+}
+
+void CScene::ClearScene()
+{
+  for (size_t uIndex = 0; uIndex < m_sMap.size(); ++uIndex)
+  {
+    m_sMap[uIndex] = '-';
+  }
+}

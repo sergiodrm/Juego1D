@@ -1,8 +1,6 @@
 #pragma once
 
 #include "GameObjects/Components/Base/Component.h"
-#include "Utilities/Vector2.h"
-
 
 class CMovementComponent : public CComponent
 {
@@ -12,10 +10,12 @@ public:
 
   virtual void Update(float _fDeltaTime) override;
 
-  CVector2 GetMovementDirection() const;
+  void Active() override;
+
+  int GetMovementDirection() const;
   float GetSpeed() const;
   void SetSpeed(float _fSpeed);
-  void SetMovementDirection(const CVector2& _vMovementDirection);
+  void SetMovementDirection(int _iMovementDirection);
 
   bool IsInputPlayerEnable() const;
   void SetInputPlayerEnable(bool _bInputPlayer);
@@ -23,10 +23,11 @@ public:
 private:
 
   void UpdateInputVector();
-  void UpdateMovement(float _fDeltaTime) const;
+  void UpdateMovement(float _fDeltaTime);
 
   float m_fSpeed;
-  CVector2 m_vMovementDirection;
+  float m_fPosition;
+  int m_iMovementDirection;
   bool m_bInputPlayer;
 };
 

@@ -1,11 +1,10 @@
 #include "AttackComponent.h"
 #include "Input/InputManager.h"
+#include "World/World.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Components/Derived/TransformComponent.h"
-#include "GameObjects/Components/Derived/RenderComponent.h"
-#include "GameObjects/Components/Derived/MovementComponent.h"
 
-CAttackComponent::CAttackComponent() {}
+CAttackComponent::CAttackComponent() = default;
 
 void CAttackComponent::Update(float _fDeltaTime)
 {
@@ -27,19 +26,11 @@ void CAttackComponent::Update(float _fDeltaTime)
 
 void CAttackComponent::SpawnBullet(int _iDirection) const
 {
-  // @TODO spawn bullet depending on the direction (it must be in a manager and not create new game objects)
-
-  CGameObject* pBullet = CGameObject::Create();
-  CRenderComponent* pRenderComponent = pBullet->AddComponent<CRenderComponent>();
-  pRenderComponent->SetSymbol(_iDirection == -1 ? '<' : '>');
-  CMovementComponent* pMovementComponent = pBullet->AddComponent<CMovementComponent>();
-  pMovementComponent->SetSpeed(20.f);
-  pMovementComponent->SetInputPlayerEnable(false);
-  pMovementComponent->SetMovementDirection(CVector2(static_cast<float>(_iDirection), 0.f));
-
-  CVector2 currentPosition = GetOwner()->GetComponent<CTransformComponent>()->GetPosition();
-
-  CTransformComponent* pTransformComponent = pBullet->GetComponent<CTransformComponent>();
-  pTransformComponent->SetPosition(currentPosition);
+  SSpawnInfo spawnInfo;
+  spawnInfo.m_eType = CGameObject::EGameObjectTypes::Bullet;
+  spawnInfo.m_iDirection = _iDirection;
+  spawnInfo.m_iPosition = GetOwner()->GetComponent<CTransformComponent>()->GetPosition();
+  spawnInfo.m_cSymbol = _iDirection == -1 ? '<' : '>';
+  CWorld::GetInstance().SpawnGameObject(spawnInfo);
 }
 

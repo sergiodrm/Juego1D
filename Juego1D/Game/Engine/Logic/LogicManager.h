@@ -23,15 +23,5 @@ public:
    *    Logic manager API
    */
   void Update(float _fDeltaTime);
-
-  void AddGameObject(CGameObject& _rGameObject);
-
-private:
-
-  /**
-   * @brief Array of game objects whose update method will be call in Update logic manager method
-   */
-  std::vector<CGameObject*> m_tGameObjects;
-
 };
 

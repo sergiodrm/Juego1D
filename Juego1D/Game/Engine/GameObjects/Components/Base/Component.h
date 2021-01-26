@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable : 4100)
 
 #include "Utilities/MacroUtility.h"
 
@@ -19,17 +20,24 @@ public:
 
   CGameObject* GetOwner() const;
 
+  virtual void Active();
+  virtual void Deactive();
+  bool IsActive() const;
+
   template <typename T>
   static T* Create(CGameObject* _pOwner);
   static void Destroy(CComponent* _pComponent);
 
 protected:
 
-  CComponent() : m_pOwner(nullptr) {}
+  CComponent()
+    : m_pOwner(nullptr), m_bActive(false)
+  {}
 
 private:
 
   CGameObject* m_pOwner;
+  bool m_bActive;
 
 };
 

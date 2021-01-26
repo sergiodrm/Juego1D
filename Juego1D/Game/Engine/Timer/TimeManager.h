@@ -17,6 +17,8 @@ public:
   void InitTimerToProcess();
   bool Update();
 
+  double GetFixedTick() const;
+
 private:
 
   void Init_Internal();

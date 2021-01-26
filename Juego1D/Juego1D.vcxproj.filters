@@ -57,7 +57,7 @@
     <ClCompile Include="Game\Engine\Timer\TimeManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Engine\World\Map.cpp">
+    <ClCompile Include="Game\Engine\World\World.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game\Engine\World\Scene.cpp">
@@ -107,7 +107,7 @@
     <ClInclude Include="Game\Engine\Timer\TimeManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Engine\World\Map.h">
+    <ClInclude Include="Game\Engine\World\World.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Engine\World\Scene.h">
