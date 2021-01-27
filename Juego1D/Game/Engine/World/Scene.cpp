@@ -7,16 +7,19 @@
 
 #include "GameObjects/GameObject.h"
 
-CScene::CScene()
+CScene::CScene(size_t _uSize, char _cSpaceSymbol)
+  : m_uSize(_uSize), m_cSpaceSymbol(_cSpaceSymbol)
 {
-  m_sMap.insert(m_sMap.begin(), 50, '-');
+  m_sMap.insert(m_sMap.begin(), m_uSize, m_cSpaceSymbol);
+  m_iPositionX = 10;
+  m_iPositionY = 1;
 }
 
 void CScene::Render()
 {
   COORD currentPosition;
-  currentPosition.X = 10;
-  currentPosition.Y = 0;
+  currentPosition.X = static_cast<SHORT>(m_iPositionX);
+  currentPosition.Y = static_cast<SHORT>(m_iPositionY);
   SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), currentPosition);
   printf("%s", m_sMap.c_str());
   ClearScene();
@@ -36,8 +39,23 @@ void CScene::UpdateGameObjectInMap(CGameObject& _rGameObject)
 
 void CScene::ClearScene()
 {
-  for (size_t uIndex = 0; uIndex < m_sMap.size(); ++uIndex)
+  for (size_t uIndex = 0; uIndex < m_uSize; ++uIndex)
   {
-    m_sMap[uIndex] = '-';
+    m_sMap[uIndex] = m_cSpaceSymbol;
   }
+}
+
+size_t CScene::GetSize() const
+{
+  return m_uSize;
+}
+
+int CScene::GetPositionX() const
+{
+  return m_iPositionX;
+}
+
+int CScene::GetPositionY() const
+{
+  return m_iPositionX;
 }

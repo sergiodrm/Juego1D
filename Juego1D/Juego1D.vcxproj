@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game\Engine\GameObjects\Components\Derived\CollisionComponent.cpp" />
     <ClCompile Include="Game\Engine\World\World.cpp" />
     <ClCompile Include="Game\Engine\GameObjects\Components\Derived\AttackComponent.cpp" />
     <ClCompile Include="Game\Engine\GameObjects\Components\Derived\RenderComponent.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="Game\Engine\World\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game\Engine\GameObjects\Components\Derived\CollisionComponent.h" />
     <ClInclude Include="Game\Engine\GameObjects\Components\Derived\AttackComponent.h" />
     <ClInclude Include="Game\Engine\GameObjects\Components\Base\Component.h" />
     <ClInclude Include="Game\Engine\GameObjects\Components\Derived\RenderComponent.h" />

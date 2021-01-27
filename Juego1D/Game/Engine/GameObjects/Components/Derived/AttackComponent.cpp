@@ -4,23 +4,35 @@
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Components/Derived/TransformComponent.h"
 
-CAttackComponent::CAttackComponent() = default;
+CAttackComponent::CAttackComponent()
+  : m_fTimeBetweenAttacks(2.f), m_fTimeUntilNextAttack(0.f) {}
 
 void CAttackComponent::Update(float _fDeltaTime)
 {
-  int iDirection = 0;
-  if (CInputManager::GetInstance().IsKeyPressed(KEYBOARD_J))
+  if (m_fTimeUntilNextAttack == 0.f)
   {
-    iDirection = -1;
-  }
-  else if (CInputManager::GetInstance().IsKeyPressed(KEYBOARD_L))
-  {
-    iDirection = 1;
-  }
+    int iDirection = 0;
 
-  if (iDirection != 0)
+    if (CInputManager::GetInstance().IsKeyPressed(KEYBOARD_J))
+    {
+      iDirection = -1;
+    }
+    else if (CInputManager::GetInstance().IsKeyPressed(KEYBOARD_L))
+    {
+      iDirection = 1;
+    }
+
+    if (iDirection != 0)
+    {
+      SpawnBullet(iDirection);
+      m_fTimeUntilNextAttack = m_fTimeBetweenAttacks;
+    }
+  }
+  else
   {
-    SpawnBullet(iDirection);
+    m_fTimeUntilNextAttack -= _fDeltaTime;
+    if (m_fTimeUntilNextAttack < 0.f)
+      m_fTimeUntilNextAttack = 0.f;
   }
 }
 

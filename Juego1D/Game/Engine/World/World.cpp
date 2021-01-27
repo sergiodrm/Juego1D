@@ -6,6 +6,7 @@
 #include "GameObjects/Components/Derived/MovementComponent.h"
 #include "GameObjects/Components/Derived/AttackComponent.h"
 #include "GameObjects/Components/Derived/RenderComponent.h"
+#include "GameObjects/Components/Derived/CollisionComponent.h"
 #include "Timer/TimeManager.h"
 
 void CWorld::Init()
@@ -19,13 +20,14 @@ CWorld& CWorld::GetInstance()
   return GetSingleton();
 }
 
-
 void CWorld::Update()
 {
   CTimeManager::GetInstance().InitTimerToProcess();
   while (CTimeManager::GetInstance().Update())
   {
+    EnemySpawnerSlot(static_cast<float>(CTimeManager::GetInstance().GetFixedTick()));
     UpdateGameObjects(static_cast<float>(CTimeManager::GetInstance().GetFixedTick()));
+    UpdatePhysics();
   }
 }
 
@@ -52,10 +54,15 @@ void CWorld::InsertGameObject(CGameObject& _rGameObject)
 
 bool CWorld::SpawnGameObject(SSpawnInfo& _rSpawnInfo)
 {
+  if (!CheckValidSpawn(_rSpawnInfo))
+  {
+    return false;
+  }
   CGameObject* pSpawnedGameObject = FindGameObjectByType(_rSpawnInfo.m_eType, false);
   if (pSpawnedGameObject == nullptr)
+  {
     return false;
-  // @TODO
+  }
   pSpawnedGameObject->GetComponent<CTransformComponent>()->SetPosition(_rSpawnInfo.m_iPosition);
   pSpawnedGameObject->GetComponent<CMovementComponent>()->SetMovementDirection(_rSpawnInfo.m_iDirection);
   pSpawnedGameObject->GetComponent<CRenderComponent>()->SetSymbol(_rSpawnInfo.m_cSymbol);
@@ -73,8 +80,11 @@ void CWorld::Init_Internal()
   /**
    * Init vars
    */
-  m_iNumberOfBullets = 5;
+  m_iNumberOfBullets = 10;
   m_iNumberOfEnemies = 10;
+  m_fTimeUntilNextSpawn = 0.f;
+  m_fEnemySpawnProb = 0.4f;
+  m_fTimeBetweenEnemySpawn = 2.f;
 
   /**
    * Init player
@@ -82,10 +92,13 @@ void CWorld::Init_Internal()
   {
     CGameObject* pPlayer = CGameObject::Create();
     pPlayer->SetType(CGameObject::EGameObjectTypes::Player);
+    pPlayer->GetComponent<CTransformComponent>()->SetPosition(static_cast<int>(GetScene().GetSize()) / 2);
     CRenderComponent* pRenderComponent = pPlayer->AddComponent<CRenderComponent>();
     pRenderComponent->SetSymbol('X');
     CMovementComponent* pMovementComponent = pPlayer->AddComponent<CMovementComponent>();
     pMovementComponent->SetInputPlayerEnable(true);
+    CCollisionComponent* pCollisionComponent = pPlayer->AddComponent<CCollisionComponent>();
+    pCollisionComponent->SetTypeToIgnore(CGameObject::EGameObjectTypes::Bullet);
     pPlayer->AddComponent<CAttackComponent>();
     pPlayer->Active();
   }
@@ -101,6 +114,9 @@ void CWorld::Init_Internal()
       pBullet->AddComponent<CRenderComponent>();
       CMovementComponent* pMovementComponent = pBullet->AddComponent<CMovementComponent>();
       pMovementComponent->SetInputPlayerEnable(false);
+      pMovementComponent->SetSpeed(5.f);
+      CCollisionComponent* pCollisionComponent = pBullet->AddComponent<CCollisionComponent>();
+      pCollisionComponent->SetTypeToIgnore(CGameObject::EGameObjectTypes::Player);
       pBullet->Deactive();
     }
   }
@@ -117,14 +133,12 @@ void CWorld::Init_Internal()
       pRenderComponent->SetSymbol('*');
       CMovementComponent* pMovementComponent = pEnemy->AddComponent<CMovementComponent>();
       pMovementComponent->SetInputPlayerEnable(false);
+      CCollisionComponent* pCollisionComponent = pEnemy->AddComponent<CCollisionComponent>();
+      pCollisionComponent->SetTypeToIgnore(CGameObject::EGameObjectTypes::Enemy);
       pEnemy->Deactive();
     }
   }
 
-  /**
-   * Init map
-   */
-  
   /**
    * Bind raw draw callback to render engine to draw the scene
    */
@@ -134,15 +148,43 @@ void CWorld::Init_Internal()
    * Init timer
    */
   CTimeManager::Init();
+}
 
-  /**
-   * @TODO: Implement a complete active/deactive logic in game objects (including components and derived).
-   * @TODO: Garbage collector to avoid memory leaks.
-   * @TODO: Spawn bullets logic from Scene and handle without change game object vector.
-   * @TODO: Include time manager in game.
-   * @TODO: Collision component.
-   * @TODO: Life component.
-   */
+void CWorld::EnemySpawnerSlot(float _fDeltaTime)
+{
+  // Lambda to get a random number between 0.f and 1.f
+  auto RandLambda = []() -> float
+  {
+    return static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+  };
+
+  if (m_fTimeUntilNextSpawn == 0.f)
+  {
+    // Roll dice
+    float fDice = RandLambda();
+    if (fDice <= m_fEnemySpawnProb)
+    {
+      float fRandomSpawnSide = RandLambda();
+      int iDirection = 1;
+      if (fRandomSpawnSide < 0.5f)
+      {
+        iDirection = -1;
+      }
+      SSpawnInfo enemySpawnInfo;
+      enemySpawnInfo.m_cSymbol = '*';
+      enemySpawnInfo.m_eType = CGameObject::EGameObjectTypes::Enemy;
+      enemySpawnInfo.m_iDirection = iDirection;
+      enemySpawnInfo.m_iPosition = iDirection == 1 ? 0 : static_cast<int>(GetScene().GetSize()) - 1;
+      SpawnGameObject(enemySpawnInfo);
+      m_fTimeUntilNextSpawn = m_fTimeBetweenEnemySpawn;
+    }
+  }
+  else
+  {
+    m_fTimeUntilNextSpawn -= _fDeltaTime;
+    if (m_fTimeUntilNextSpawn < 0.f)
+      m_fTimeUntilNextSpawn = 0.f;
+  }
 }
 
 void CWorld::UpdateGameObjects(float _fDeltaTime)
@@ -150,6 +192,25 @@ void CWorld::UpdateGameObjects(float _fDeltaTime)
   for (CGameObject* pIterator : m_tGameObjects)
   {
     pIterator->Update(_fDeltaTime);
+  }
+}
+
+void CWorld::UpdatePhysics()
+{
+  typedef std::vector<CGameObject*>::iterator GameObjectIterator;
+  for (GameObjectIterator currentGameObject = m_tGameObjects.begin(); currentGameObject != m_tGameObjects.end(); ++currentGameObject)
+  {
+    CCollisionComponent* pCollisionComponent = (*currentGameObject)->GetComponent<CCollisionComponent>();
+    GameObjectIterator collidingGameObject = currentGameObject + 1;
+    while ((*currentGameObject)->IsActive() && collidingGameObject != m_tGameObjects.end())
+    {
+      if ((*collidingGameObject)->IsActive() && pCollisionComponent->Collides(**collidingGameObject))
+      {
+        (*currentGameObject)->Deactive();
+        (*collidingGameObject)->Deactive();
+      }
+      else ++collidingGameObject;
+    }
   }
 }
 
@@ -174,5 +235,26 @@ CGameObject* CWorld::FindGameObjectByType(CGameObject::EGameObjectTypes _eType, 
       return pIterator;
   }
   return nullptr;
+}
+
+bool CWorld::CheckValidSpawn(SSpawnInfo& _rSpawnInfo) const
+{
+  if (_rSpawnInfo.m_eType == CGameObject::EGameObjectTypes::Bullet)
+  {
+    int iCounter = 0;
+    for (CGameObject* pIterator : m_tGameObjects)
+    {
+      if (pIterator->IsActive() && pIterator->IsType(_rSpawnInfo.m_eType))
+      {
+        CMovementComponent* pMovementComponent = pIterator->GetComponent<CMovementComponent>();
+        if (pMovementComponent->GetMovementDirection() == _rSpawnInfo.m_iDirection)
+        {
+          ++iCounter;
+        }
+      }
+    }
+    return iCounter < 5;
+  }
+  return true;
 }
 

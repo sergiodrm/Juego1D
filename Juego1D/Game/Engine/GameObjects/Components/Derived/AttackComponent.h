@@ -13,5 +13,12 @@ private:
 
   void SpawnBullet(int _iDirection) const;
 
+  /**
+   *    Properties
+   */
+
+  float m_fTimeBetweenAttacks;
+  float m_fTimeUntilNextAttack;
+
 };
 
