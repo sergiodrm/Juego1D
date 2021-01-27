@@ -1,10 +1,7 @@
 #include "Scene.h"
 #include "GameObjects/Components/Derived/TransformComponent.h"
 #include "GameObjects/Components/Derived/RenderComponent.h"
-#include <Windows.h>
-#include <consoleapi2.h>
-#include <cstdio>
-
+#include "Render/RenderEngine.h"
 #include "GameObjects/GameObject.h"
 
 CScene::CScene(size_t _uSize, char _cSpaceSymbol)
@@ -17,11 +14,7 @@ CScene::CScene(size_t _uSize, char _cSpaceSymbol)
 
 void CScene::Render()
 {
-  COORD currentPosition;
-  currentPosition.X = static_cast<SHORT>(m_iPositionX);
-  currentPosition.Y = static_cast<SHORT>(m_iPositionY);
-  SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), currentPosition);
-  printf("%s", m_sMap.c_str());
+  CRenderEngine::Print(m_sMap.c_str(), m_iPositionX, m_iPositionY);
   ClearScene();
 }
 
@@ -57,5 +50,5 @@ int CScene::GetPositionX() const
 
 int CScene::GetPositionY() const
 {
-  return m_iPositionX;
+  return m_iPositionY;
 }

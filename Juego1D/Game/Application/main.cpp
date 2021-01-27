@@ -9,7 +9,7 @@ int main()
   CInputManager::Init();
   CWorld::Init();
 
-  while (true)
+  while (!CWorld::GetInstance().GameOver())
   {
     CWorld::GetInstance().Update();
     CRenderEngine::GetInstance().Render();

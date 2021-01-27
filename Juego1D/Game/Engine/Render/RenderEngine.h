@@ -26,6 +26,7 @@ public:
    */
   void Render() const;
   void SetDrawWorldFunction(DrawWorldFunction _pDrawFunction);
+  static void Print(const char* _sStringToPrint, int _iPosX, int _iPosY);
 
 private:
 

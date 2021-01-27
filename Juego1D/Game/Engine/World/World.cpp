@@ -1,6 +1,7 @@
 #include "World.h"
 #include "Logic/LogicManager.h"
 #include "Render/RenderEngine.h"
+#include "UI/UIManager.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Components/Derived/TransformComponent.h"
 #include "GameObjects/Components/Derived/MovementComponent.h"
@@ -27,7 +28,8 @@ void CWorld::Update()
   {
     EnemySpawnerSlot(static_cast<float>(CTimeManager::GetInstance().GetFixedTick()));
     UpdateGameObjects(static_cast<float>(CTimeManager::GetInstance().GetFixedTick()));
-    UpdatePhysics();
+    ResolveCollisions();
+    ResolveGameObjectsActivation();
   }
 }
 
@@ -39,6 +41,7 @@ void CWorld::DrawWorld()
 void CWorld::DrawWorld_Internal()
 {
   m_scene.Render();
+  CUIManager::GetInstance().Render();
 }
 
 void CWorld::Shutdown()
@@ -66,13 +69,28 @@ bool CWorld::SpawnGameObject(SSpawnInfo& _rSpawnInfo)
   pSpawnedGameObject->GetComponent<CTransformComponent>()->SetPosition(_rSpawnInfo.m_iPosition);
   pSpawnedGameObject->GetComponent<CMovementComponent>()->SetMovementDirection(_rSpawnInfo.m_iDirection);
   pSpawnedGameObject->GetComponent<CRenderComponent>()->SetSymbol(_rSpawnInfo.m_cSymbol);
-  pSpawnedGameObject->Active();
+  ActiveGameObject(*pSpawnedGameObject);
   return true;
+}
+
+void CWorld::ActiveGameObject(CGameObject& _rGameObject)
+{
+  m_gameObjectsToActive.push(&_rGameObject);
+}
+void CWorld::DeactiveGameObject(CGameObject& _rGameObject)
+{
+  m_gameObjectsToDeactive.push(&_rGameObject);
 }
 
 CScene& CWorld::GetScene()
 {
   return m_scene;
+}
+
+bool CWorld::GameOver() const
+{
+  CGameObject* pPlayer = FindGameObjectByType(CGameObject::EGameObjectTypes::Player, true);
+  return pPlayer == nullptr;
 }
 
 void CWorld::Init_Internal()
@@ -100,7 +118,7 @@ void CWorld::Init_Internal()
     CCollisionComponent* pCollisionComponent = pPlayer->AddComponent<CCollisionComponent>();
     pCollisionComponent->SetTypeToIgnore(CGameObject::EGameObjectTypes::Bullet);
     pPlayer->AddComponent<CAttackComponent>();
-    pPlayer->Active();
+    ActiveGameObject(*pPlayer);
   }
 
   /**
@@ -117,7 +135,7 @@ void CWorld::Init_Internal()
       pMovementComponent->SetSpeed(5.f);
       CCollisionComponent* pCollisionComponent = pBullet->AddComponent<CCollisionComponent>();
       pCollisionComponent->SetTypeToIgnore(CGameObject::EGameObjectTypes::Player);
-      pBullet->Deactive();
+      DeactiveGameObject(*pBullet);
     }
   }
 
@@ -135,7 +153,7 @@ void CWorld::Init_Internal()
       pMovementComponent->SetInputPlayerEnable(false);
       CCollisionComponent* pCollisionComponent = pEnemy->AddComponent<CCollisionComponent>();
       pCollisionComponent->SetTypeToIgnore(CGameObject::EGameObjectTypes::Enemy);
-      pEnemy->Deactive();
+      DeactiveGameObject(*pEnemy);
     }
   }
 
@@ -148,6 +166,13 @@ void CWorld::Init_Internal()
    * Init timer
    */
   CTimeManager::Init();
+
+  /**
+   * Init ui manager
+   */
+  CUIManager::Init();
+
+  ResolveGameObjectsActivation();
 }
 
 void CWorld::EnemySpawnerSlot(float _fDeltaTime)
@@ -195,27 +220,52 @@ void CWorld::UpdateGameObjects(float _fDeltaTime)
   }
 }
 
-void CWorld::UpdatePhysics()
+void CWorld::ResolveGameObjectsActivation()
+{
+  while (!m_gameObjectsToActive.empty())
+  {
+    m_gameObjectsToActive.front()->Active();
+    m_gameObjectsToActive.pop();
+  }
+  while (!m_gameObjectsToDeactive.empty())
+  {
+    m_gameObjectsToDeactive.front()->Deactive();
+    m_gameObjectsToDeactive.pop();
+  }
+}
+
+void CWorld::ResolveCollisions()
 {
   typedef std::vector<CGameObject*>::iterator GameObjectIterator;
   for (GameObjectIterator currentGameObject = m_tGameObjects.begin(); currentGameObject != m_tGameObjects.end(); ++currentGameObject)
   {
-    CCollisionComponent* pCollisionComponent = (*currentGameObject)->GetComponent<CCollisionComponent>();
-    GameObjectIterator collidingGameObject = currentGameObject + 1;
-    while ((*currentGameObject)->IsActive() && collidingGameObject != m_tGameObjects.end())
+    if ((*currentGameObject)->IsActive())
     {
-      if ((*collidingGameObject)->IsActive() && pCollisionComponent->Collides(**collidingGameObject))
+      CCollisionComponent* pCollisionComponent = (*currentGameObject)->GetComponent<CCollisionComponent>();
+      GameObjectIterator collidingGameObject = currentGameObject + 1;
+      bool bHasCollided = false;
+      while (!bHasCollided && collidingGameObject != m_tGameObjects.end())
       {
-        (*currentGameObject)->Deactive();
-        (*collidingGameObject)->Deactive();
+        if ((*collidingGameObject)->IsActive() && pCollisionComponent->Collides(**collidingGameObject))
+        {
+          // Check types to update UI
+          if ((*currentGameObject)->IsType(CGameObject::EGameObjectTypes::Enemy) || (*collidingGameObject)->IsType(CGameObject::EGameObjectTypes::Enemy))
+          {
+            CUIManager::GetInstance().EnemyDead();
+          }
+          DeactiveGameObject(**currentGameObject);
+          DeactiveGameObject(**collidingGameObject);
+          bHasCollided = true;
+        }
+        else ++collidingGameObject;
       }
-      else ++collidingGameObject;
     }
   }
 }
 
 void CWorld::Shutdown_Internal()
 {
+  CUIManager::GetInstance().Shutdown();
   CTimeManager::Shutdown();
 
   /**
@@ -227,7 +277,7 @@ void CWorld::Shutdown_Internal()
   }
 }
 
-CGameObject* CWorld::FindGameObjectByType(CGameObject::EGameObjectTypes _eType, bool _bIsActive)
+CGameObject* CWorld::FindGameObjectByType(CGameObject::EGameObjectTypes _eType, bool _bIsActive) const
 {
   for (CGameObject* pIterator : m_tGameObjects)
   {

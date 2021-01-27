@@ -13,7 +13,7 @@ void CCollisionComponent::Update(float _fDeltaTime)
     CTransformComponent* pTransformComponent = GetOwner()->GetComponent<CTransformComponent>();
     if (pTransformComponent->GetPosition() <= 0 || pTransformComponent->GetPosition() >= static_cast<int>(CWorld::GetInstance().GetScene().GetSize()))
     {
-      GetOwner()->Deactive();
+      CWorld::GetInstance().DeactiveGameObject(*GetOwner());
     }
   }
 }

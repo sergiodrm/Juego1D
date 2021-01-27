@@ -44,7 +44,10 @@ public:
 
   void InsertGameObject(CGameObject& _rGameObject);
   bool SpawnGameObject(SSpawnInfo& _rSpawnInfo);
+  void ActiveGameObject(CGameObject& _rGameObject);
+  void DeactiveGameObject(CGameObject& _rGameObject);
   CScene& GetScene();
+  bool GameOver() const;
 
   /**
    * Private methods
@@ -54,9 +57,10 @@ private:
   void Init_Internal();
   void EnemySpawnerSlot(float _fDeltaTime);
   void UpdateGameObjects(float _fDeltaTime);
-  void UpdatePhysics();
+  void ResolveGameObjectsActivation();
+  void ResolveCollisions();
   void Shutdown_Internal();
-  CGameObject* FindGameObjectByType(CGameObject::EGameObjectTypes _eType, bool _bIsActive = false);
+  CGameObject* FindGameObjectByType(CGameObject::EGameObjectTypes _eType, bool _bIsActive = false) const;
   bool CheckValidSpawn(SSpawnInfo& _rSpawnInfo) const;
   void DrawWorld_Internal();
 
@@ -71,6 +75,8 @@ private:
    * @brief Array of game objects whose update method will be call in Update logic manager method
    */
   std::vector<CGameObject*> m_tGameObjects;
+  std::queue<CGameObject*> m_gameObjectsToActive;
+  std::queue<CGameObject*> m_gameObjectsToDeactive;
 
   CScene m_scene;
   float m_fTimeBetweenEnemySpawn;
