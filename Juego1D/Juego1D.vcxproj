@@ -155,10 +155,7 @@
     <ClCompile Include="Game\Engine\GameObjects\GameObject.cpp" />
     <ClCompile Include="Game\Engine\Utilities\MacroUtility.cpp" />
     <ClCompile Include="Game\Engine\Render\RenderEngine.cpp" />
-    <ClCompile Include="Game\Engine\Render\RenderableObject.cpp" />
-    <ClCompile Include="Game\Engine\Logic\LogicManager.cpp" />
     <ClCompile Include="Game\Engine\Input\InputManager.cpp" />
-    <ClCompile Include="Game\Engine\Utilities\Vector2.cpp" />
     <ClCompile Include="Game\Engine\GameObjects\Components\Derived\MovementComponent.cpp" />
     <ClCompile Include="Game\Engine\Timer\TimeManager.cpp" />
     <ClCompile Include="Game\Engine\World\Scene.cpp" />
@@ -174,10 +171,7 @@
     <ClInclude Include="Game\Engine\GameObjects\Components\Derived\TransformComponent.h" />
     <ClInclude Include="Game\Engine\Utilities\SingletonBase.h" />
     <ClInclude Include="Game\Engine\Render\RenderEngine.h" />
-    <ClInclude Include="Game\Engine\Render\RenderableObject.h" />
-    <ClInclude Include="Game\Engine\Logic\LogicManager.h" />
     <ClInclude Include="Game\Engine\Input\InputManager.h" />
-    <ClInclude Include="Game\Engine\Utilities\Vector2.h" />
     <ClInclude Include="Game\Engine\GameObjects\Components\Derived\MovementComponent.h" />
     <ClInclude Include="Game\Engine\Timer\TimeManager.h" />
     <ClInclude Include="Game\Engine\World\Scene.h" />

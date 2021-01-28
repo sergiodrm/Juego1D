@@ -8,17 +8,13 @@ CMovementComponent::CMovementComponent()
 
 void CMovementComponent::Update(float _fDeltaTime)
 {
+  // Actualizar la direccion de movimiento segun el player
   if (m_bInputPlayer)
     UpdateInputVector();
+  // Actualizar transform con la informacion de la direccion
   UpdateMovement(_fDeltaTime);
 }
 
-void CMovementComponent::Active()
-{
-  Super::Active();
-  CTransformComponent* pTransformComponent = GetOwner()->GetComponent<CTransformComponent>();
-  m_fPosition = static_cast<float>(pTransformComponent->GetPosition());
-}
 
 int CMovementComponent::GetMovementDirection() const
 {
@@ -40,18 +36,19 @@ void CMovementComponent::SetMovementDirection(int _iMovementDirection)
   m_iMovementDirection = _iMovementDirection;
 }
 
-bool CMovementComponent::IsInputPlayerEnable() const
+bool CMovementComponent::IsInputPlayerEnabled() const
 {
   return m_bInputPlayer;
 }
 
-void CMovementComponent::SetInputPlayerEnable(bool _bInputPlayer)
+void CMovementComponent::SetInputPlayerEnabled(bool _bInputPlayer)
 {
   m_bInputPlayer = _bInputPlayer;
 }
 
 void CMovementComponent::UpdateInputVector()
 {
+  // Comprobar pulsacion de teclas asociadas al movimiento.
   if (CInputManager::GetInstance().IsKeyPressed(KEYBOARD_A))
   {
     m_iMovementDirection = -1;
@@ -66,14 +63,20 @@ void CMovementComponent::UpdateInputVector()
 
 void CMovementComponent::UpdateMovement(float _fDeltaTime)
 {
+  // Obtener el transform del game object.
   CTransformComponent* pTransformComponent = GetOwner()->GetComponent<CTransformComponent>();
   if (pTransformComponent != nullptr)
   {
+    // Actualizar posicion exacta para que coincida con la posicion en la que se encuentra el transform.
     if (pTransformComponent->GetPosition() != static_cast<int>(m_fPosition))
     {
       m_fPosition = static_cast<float>(pTransformComponent->GetPosition());
     }
+    // Actualizar posicion exacta segun velocidad tiempo y direccion.
     m_fPosition += m_fSpeed * _fDeltaTime * static_cast<float>(m_iMovementDirection);
+    // Actualizar la posicion del transform con la parte entera de la posicion exacta.
     pTransformComponent->SetPosition(static_cast<int>(m_fPosition));
+    // De esta manera el movimiento se modifica en funcion de la velocidad dada en unidades de espacio / segundo.
+    // (Entendiendo como unidades de espacio a cada posicion del string que dibuja la escena).
   }
 }

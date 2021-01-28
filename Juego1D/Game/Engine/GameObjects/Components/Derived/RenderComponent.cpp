@@ -5,13 +5,9 @@
 
 CRenderComponent::CRenderComponent() : m_cSymbol('X') {}
 
-void CRenderComponent::OnCreation(CGameObject* _pOwner)
-{
-  Super::OnCreation(_pOwner);
-}
-
 void CRenderComponent::Update(float _fDeltaTime)
 {
+  // Actualizar la posicion del game object en la escena.
   CWorld::GetInstance().GetScene().UpdateGameObjectInMap(*GetOwner());
 }
 

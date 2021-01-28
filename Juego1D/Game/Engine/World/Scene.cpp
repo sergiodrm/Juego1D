@@ -14,16 +14,19 @@ CScene::CScene(size_t _uSize, char _cSpaceSymbol)
 
 void CScene::Render()
 {
+  // Imprimir la escena y limpiar el contenedor.
   CRenderEngine::Print(m_sMap.c_str(), m_iPositionX, m_iPositionY);
   ClearScene();
 }
 
 void CScene::UpdateGameObjectInMap(CGameObject& _rGameObject)
 {
+  // Obtener la posicion y el simbolo del game object a partir de sus componentes.
   CTransformComponent* pTransformComponent = _rGameObject.GetComponent<CTransformComponent>();
   CRenderComponent* pRenderComponent = _rGameObject.GetComponent<CRenderComponent>();
   int iPosition = pTransformComponent->GetPosition();
   char cSymbol = pRenderComponent->GetSymbol();
+  // Posicionar el game object en la escena.
   if (iPosition >= 0 && iPosition < static_cast<int>(m_sMap.size()))
   {
     m_sMap[iPosition] = cSymbol;

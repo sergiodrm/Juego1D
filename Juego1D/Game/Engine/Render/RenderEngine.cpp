@@ -1,9 +1,8 @@
 #include "RenderEngine.h"
+#include "Utilities/MacroUtility.h"
 #include <Windows.h>
-#include <cstdlib>
-#include <Windows.h>
+#include <cstdio>
 #include <consoleapi2.h>
-#include "RenderableObject.h"
 
 void CRenderEngine::Init()
 {
@@ -36,11 +35,14 @@ void CRenderEngine::SetDrawWorldFunction(DrawWorldFunction _pDrawFunction)
 
 void CRenderEngine::Print(const char* _sStringToPrint, int _iPosX, int _iPosY)
 {
+  ensure(_sStringToPrint != nullptr);
+  // Cambiar la posicion del cursor
   COORD currentPosition;
   currentPosition.X = static_cast<SHORT>(_iPosX);
   currentPosition.Y = static_cast<SHORT>(_iPosY);
   SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), currentPosition);
-  printf(_sStringToPrint);
+  // Printear la cadena especificada.
+  printf("%s", _sStringToPrint);
 }
 
 void CRenderEngine::Init_Internal()

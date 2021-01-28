@@ -1,6 +1,5 @@
 #include "GameObject.h"
 #include "Components/Derived/TransformComponent.h"
-#include "Logic/LogicManager.h"
 #include "World/World.h"
 
 CGameObject::CGameObject() :
@@ -8,7 +7,6 @@ CGameObject::CGameObject() :
 
 CGameObject::~CGameObject() = default;
 
-void CGameObject::Init() {}
 
 void CGameObject::OnCreation()
 {

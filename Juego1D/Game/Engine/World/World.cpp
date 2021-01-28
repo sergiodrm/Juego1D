@@ -1,5 +1,4 @@
 #include "World.h"
-#include "Logic/LogicManager.h"
 #include "Render/RenderEngine.h"
 #include "UI/UIManager.h"
 #include "GameObjects/GameObject.h"
@@ -23,12 +22,18 @@ CWorld& CWorld::GetInstance()
 
 void CWorld::Update()
 {
+  // Preparar el timer para la actualizacion de la logica.
   CTimeManager::GetInstance().InitTimerToProcess();
+  // Loop de logica hasta que el timer haya agotado el tiempo almacenado.
   while (CTimeManager::GetInstance().Update())
   {
+    // Logica de spawn de enemigos.
     EnemySpawnerSlot(static_cast<float>(CTimeManager::GetInstance().GetFixedTick()));
+    // Actualizacion de game objects.
     UpdateGameObjects(static_cast<float>(CTimeManager::GetInstance().GetFixedTick()));
+    // Resolucion de colisiones.
     ResolveCollisions();
+    // Resolucion de cambios de estado en los game objects.
     ResolveGameObjectsActivation();
   }
 }
@@ -40,6 +45,7 @@ void CWorld::DrawWorld()
 
 void CWorld::DrawWorld_Internal()
 {
+  // Renderizacion de escena + ui
   m_scene.Render();
   CUIManager::GetInstance().Render();
 }
@@ -57,18 +63,22 @@ void CWorld::InsertGameObject(CGameObject& _rGameObject)
 
 bool CWorld::SpawnGameObject(SSpawnInfo& _rSpawnInfo)
 {
+  // Chequear que se pueda spawnear el game object solicitado
   if (!CheckValidSpawn(_rSpawnInfo))
   {
     return false;
   }
+  // Busqueda de un game object inactivo del tipo especificado
   CGameObject* pSpawnedGameObject = FindGameObjectByType(_rSpawnInfo.m_eType, false);
   if (pSpawnedGameObject == nullptr)
   {
     return false;
   }
+  // Configuracion del spawn
   pSpawnedGameObject->GetComponent<CTransformComponent>()->SetPosition(_rSpawnInfo.m_iPosition);
   pSpawnedGameObject->GetComponent<CMovementComponent>()->SetMovementDirection(_rSpawnInfo.m_iDirection);
   pSpawnedGameObject->GetComponent<CRenderComponent>()->SetSymbol(_rSpawnInfo.m_cSymbol);
+  // Añadir el spawn a los game objects pendientes de activacion.
   ActiveGameObject(*pSpawnedGameObject);
   return true;
 }
@@ -96,7 +106,7 @@ bool CWorld::GameOver() const
 void CWorld::Init_Internal()
 {
   /**
-   * Init vars
+   * Inicializacion de variables.
    */
   m_iNumberOfBullets = 10;
   m_iNumberOfEnemies = 10;
@@ -105,7 +115,7 @@ void CWorld::Init_Internal()
   m_fTimeBetweenEnemySpawn = 2.f;
 
   /**
-   * Init player
+   * Inicializacion del game object del jugador.
    */
   {
     CGameObject* pPlayer = CGameObject::Create();
@@ -114,7 +124,7 @@ void CWorld::Init_Internal()
     CRenderComponent* pRenderComponent = pPlayer->AddComponent<CRenderComponent>();
     pRenderComponent->SetSymbol('X');
     CMovementComponent* pMovementComponent = pPlayer->AddComponent<CMovementComponent>();
-    pMovementComponent->SetInputPlayerEnable(true);
+    pMovementComponent->SetInputPlayerEnabled(true);
     CCollisionComponent* pCollisionComponent = pPlayer->AddComponent<CCollisionComponent>();
     pCollisionComponent->SetTypeToIgnore(CGameObject::EGameObjectTypes::Bullet);
     pPlayer->AddComponent<CAttackComponent>();
@@ -122,7 +132,7 @@ void CWorld::Init_Internal()
   }
 
   /**
-   * Init bullets
+   * Inicializacion de las balas.
    */
   {
     for (int iIndex = 0; iIndex < m_iNumberOfBullets; ++iIndex)
@@ -131,7 +141,7 @@ void CWorld::Init_Internal()
       pBullet->SetType(CGameObject::EGameObjectTypes::Bullet);
       pBullet->AddComponent<CRenderComponent>();
       CMovementComponent* pMovementComponent = pBullet->AddComponent<CMovementComponent>();
-      pMovementComponent->SetInputPlayerEnable(false);
+      pMovementComponent->SetInputPlayerEnabled(false);
       pMovementComponent->SetSpeed(5.f);
       CCollisionComponent* pCollisionComponent = pBullet->AddComponent<CCollisionComponent>();
       pCollisionComponent->SetTypeToIgnore(CGameObject::EGameObjectTypes::Player);
@@ -140,7 +150,7 @@ void CWorld::Init_Internal()
   }
 
   /**
-   * Init enemies
+   * Inicializacion de enemigos.
    */
   {
     for (int iIndex = 0; iIndex < m_iNumberOfEnemies; ++iIndex)
@@ -150,7 +160,7 @@ void CWorld::Init_Internal()
       CRenderComponent* pRenderComponent = pEnemy->AddComponent<CRenderComponent>();
       pRenderComponent->SetSymbol('*');
       CMovementComponent* pMovementComponent = pEnemy->AddComponent<CMovementComponent>();
-      pMovementComponent->SetInputPlayerEnable(false);
+      pMovementComponent->SetInputPlayerEnabled(false);
       CCollisionComponent* pCollisionComponent = pEnemy->AddComponent<CCollisionComponent>();
       pCollisionComponent->SetTypeToIgnore(CGameObject::EGameObjectTypes::Enemy);
       DeactiveGameObject(*pEnemy);
@@ -158,54 +168,61 @@ void CWorld::Init_Internal()
   }
 
   /**
-   * Bind raw draw callback to render engine to draw the scene
+   * Enlazar el metodo de renderizado del mundo con el render engine.
    */
   CRenderEngine::GetInstance().SetDrawWorldFunction(&CWorld::DrawWorld);
 
   /**
-   * Init timer
+   * Iniciar el timer.
    */
   CTimeManager::Init();
 
   /**
-   * Init ui manager
+   * Iniciar el gestor de interfaz de usuario.
    */
   CUIManager::Init();
 
+  /**
+   * Activar los game objects pendientes antes de iniciar el mundo.
+   */
   ResolveGameObjectsActivation();
 }
 
 void CWorld::EnemySpawnerSlot(float _fDeltaTime)
 {
-  // Lambda to get a random number between 0.f and 1.f
+  // Lambda para devolver un numero aleatorio entre 0 y 1.
   auto RandLambda = []() -> float
   {
     return static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
   };
-
+  // Si el temporizador del spawn esta a cero, se puede spawnear un enemigo.
   if (m_fTimeUntilNextSpawn == 0.f)
   {
-    // Roll dice
+    // Tirar el dado para decidir si hay spawn o no.
     float fDice = RandLambda();
     if (fDice <= m_fEnemySpawnProb)
     {
+      // En caso de spawnear, decidir en que lado de la escena se spawnea el enemigo.
       float fRandomSpawnSide = RandLambda();
       int iDirection = 1;
       if (fRandomSpawnSide < 0.5f)
       {
         iDirection = -1;
       }
+      // Rellenar la informacion de spawn.
       SSpawnInfo enemySpawnInfo;
       enemySpawnInfo.m_cSymbol = '*';
       enemySpawnInfo.m_eType = CGameObject::EGameObjectTypes::Enemy;
       enemySpawnInfo.m_iDirection = iDirection;
       enemySpawnInfo.m_iPosition = iDirection == 1 ? 0 : static_cast<int>(GetScene().GetSize()) - 1;
       SpawnGameObject(enemySpawnInfo);
+      // Iniciar la cuenta atras de spawn de enemigo.
       m_fTimeUntilNextSpawn = m_fTimeBetweenEnemySpawn;
     }
   }
   else
   {
+    // Cuenta atras.
     m_fTimeUntilNextSpawn -= _fDeltaTime;
     if (m_fTimeUntilNextSpawn < 0.f)
       m_fTimeUntilNextSpawn = 0.f;
@@ -222,11 +239,13 @@ void CWorld::UpdateGameObjects(float _fDeltaTime)
 
 void CWorld::ResolveGameObjectsActivation()
 {
+  // Resolver game objects pendientes de activacion.
   while (!m_gameObjectsToActive.empty())
   {
     m_gameObjectsToActive.front()->Active();
     m_gameObjectsToActive.pop();
   }
+  // Resolver game objects pendientes de desactivacion.
   while (!m_gameObjectsToDeactive.empty())
   {
     m_gameObjectsToDeactive.front()->Deactive();
@@ -236,11 +255,14 @@ void CWorld::ResolveGameObjectsActivation()
 
 void CWorld::ResolveCollisions()
 {
+  // Recorrer los game objects para buscar colisiones entre ellos.
   typedef std::vector<CGameObject*>::iterator GameObjectIterator;
   for (GameObjectIterator currentGameObject = m_tGameObjects.begin(); currentGameObject != m_tGameObjects.end(); ++currentGameObject)
   {
+    // Chequear el game object si esta activado.
     if ((*currentGameObject)->IsActive())
     {
+      // Se empieza a comprobar la colision con el siguiente game object del vector.
       CCollisionComponent* pCollisionComponent = (*currentGameObject)->GetComponent<CCollisionComponent>();
       GameObjectIterator collidingGameObject = currentGameObject + 1;
       bool bHasCollided = false;
@@ -248,7 +270,7 @@ void CWorld::ResolveCollisions()
       {
         if ((*collidingGameObject)->IsActive() && pCollisionComponent->Collides(**collidingGameObject))
         {
-          // Check types to update UI
+          // Comprobar si alguno de los game objects colisionados es un enemigo para informar al gestor de UI.
           if ((*currentGameObject)->IsType(CGameObject::EGameObjectTypes::Enemy) || (*collidingGameObject)->IsType(CGameObject::EGameObjectTypes::Enemy))
           {
             CUIManager::GetInstance().EnemyDead();
@@ -269,7 +291,7 @@ void CWorld::Shutdown_Internal()
   CTimeManager::Shutdown();
 
   /**
-   * Destroy all game objects
+   * Borrar todos los game objects almacenados.
    */
   for (CGameObject* pIterator : m_tGameObjects)
   {
@@ -289,6 +311,10 @@ CGameObject* CWorld::FindGameObjectByType(CGameObject::EGameObjectTypes _eType, 
 
 bool CWorld::CheckValidSpawn(SSpawnInfo& _rSpawnInfo) const
 {
+  /**
+   * Chequear si se puede spawnear una bala segun el criterio de que solo
+   * pueden haber 5 balas a cada lado del player.
+   */
   if (_rSpawnInfo.m_eType == CGameObject::EGameObjectTypes::Bullet)
   {
     int iCounter = 0;

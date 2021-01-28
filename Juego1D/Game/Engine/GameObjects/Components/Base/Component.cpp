@@ -7,7 +7,6 @@ void CComponent::OnCreation(CGameObject* _pOwner)
   m_pOwner = _pOwner;
 }
 
-void CComponent::Init() {}
 void CComponent::Update(float _fDeltaTime) {}
 void CComponent::OnDestroy() {}
 

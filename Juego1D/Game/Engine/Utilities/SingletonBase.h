@@ -1,5 +1,9 @@
 #pragma once
 
+/**
+ * @brief Macro para declarar el constructor de la clase privado y
+ * eliminar el constructor copia y el operador de asignacion.
+ */
 #define DECLARE_SINGLETON_CLASS(_CLASS)   \
 private:                                  \
   friend ISingletonBase<_CLASS>;          \
@@ -7,7 +11,10 @@ private:                                  \
   _CLASS(const _CLASS&) = delete;         \
   void operator=(const _CLASS&) = delete
 
-
+/**
+ * @brief Base de un diseño singleton implementado con templates para
+ * que se pueda adaptar a cualquier clase.
+ */
 template <typename T>
 class ISingletonBase
 {
@@ -24,7 +31,7 @@ private:
 };
 
 /**
-*     Template definition
+*     Definicion de los metodos
 */
 template <typename T>
 T* ISingletonBase<T>::m_pInstance = nullptr;

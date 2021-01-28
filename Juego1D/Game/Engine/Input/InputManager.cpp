@@ -19,5 +19,6 @@ void CInputManager::Shutdown()
 
 bool CInputManager::IsKeyPressed(Key _key)
 {
+  // Comprobar el msb con una mascara.
   return GetAsyncKeyState(_key) & 0x8000;
 }

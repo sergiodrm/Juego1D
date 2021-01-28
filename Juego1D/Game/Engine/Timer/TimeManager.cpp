@@ -19,20 +19,24 @@ void CTimeManager::Shutdown()
 
 void CTimeManager::InitTimerToProcess()
 {
+  // Calcular los ciclos de contador entre el anterior frame y este
   LARGE_INTEGER iCurrentTime;
   QueryPerformanceCounter(&iCurrentTime);
   LARGE_INTEGER iElapsedTime;
   iElapsedTime.QuadPart = iCurrentTime.QuadPart - m_iPreviousTime.QuadPart;
+  // Actualizar previous time y calcular el tiempo entre frames
   m_iPreviousTime = iElapsedTime;
   m_dTimeBetweenFrames = static_cast<double>(iElapsedTime.QuadPart) / static_cast<double>(m_iFrequency.QuadPart);
   m_dElapsedTime += m_dTimeBetweenFrames;
 
+  // Si ha pasado mas tiempo del permitido, corregirlo.
   if (m_dElapsedTime > m_dMaxElapsedTime)
     m_dElapsedTime = m_dMaxElapsedTime;
 }
 
 bool CTimeManager::Update()
 {
+  // Comprobar que si se ha pasado el tiempo especificado entre frames.
   if (m_dElapsedTime > m_dFixedTick)
   {
     m_dElapsedTime -= m_dFixedTick;

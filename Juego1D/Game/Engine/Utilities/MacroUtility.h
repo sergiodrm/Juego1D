@@ -3,9 +3,7 @@
 #include <assert.h>
 
 /**
-*
-*     Logger
-*
+* Sistema de logger basado en macros
 */
 void _dbgprint(const char* _sMode, const char* _sFilename, int _iLine, const char* _sLevel, const char* _sFormat, ...);
 
@@ -25,17 +23,17 @@ void _dbgprint(const char* _sMode, const char* _sFilename, int _iLine, const cha
 #endif
 
 /**
- *    Derived class macro
+ * Macro para definir una clase base como Super.
  */
 #define BASE_CLASS(_BASECLASSNAME) \
 protected: \
   typedef _BASECLASSNAME Super 
 
 /**
-*
-*     Check vars
-*
-*/
+ *  Macros para comprobacion de afirmaciones.
+ *  En caso de que la condicion no se cumpla, salta un breakpoint (debug).
+ *  En caso de que la condicion no se cumpla, mostrara un error mediante assert (release).
+ */
 #ifdef _DEBUG
 
 #define ensure_msg(_bTrueCondition, _sMsg)    \

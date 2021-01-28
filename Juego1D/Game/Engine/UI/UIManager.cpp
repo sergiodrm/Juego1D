@@ -21,6 +21,7 @@ void CUIManager::Shutdown()
 
 void CUIManager::Render() const
 {
+  // Imprimir el contador de enemigos a la derecha de la escena.
   int iPosX = CWorld::GetInstance().GetScene().GetPositionX() + static_cast<int>(CWorld::GetInstance().GetScene().GetSize()) + 2;
   int iPosY = CWorld::GetInstance().GetScene().GetPositionY();
   char sScreenInfo[5];
